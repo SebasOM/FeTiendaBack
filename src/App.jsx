@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios"
@@ -24,7 +24,8 @@ function App() {
         nombre,
         apellidos,
       })
-      alert("Cliente agregado exitosamente")
+      alert("Cliente agregado exitosamente...")
+      getCustomer();
     }
     catch(err){
       console.log(err)
@@ -43,6 +44,28 @@ function App() {
     }
   };
 
+  //Metodo para que cuando haya un cambio en el componente, se invoque getCustomers
+  useEffect(()=>{
+    getCustomer();
+  }, [])
+
+  //Buscar por ID
+  const getClientePorId = async (id) => {
+    try {
+      const url = `http://172.16.57.16:3100/api/clientes/${id}`;
+      const response = await axios.get(url);
+      if (response.data.nombre != null) {
+        setNombre(response.data.nombre);
+        setApellidos(response.data.apellidos);
+      }
+      else {
+        alert("No se encuentra el id " + id);
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
+  };
   return (
     <>
       <div className="container">
@@ -98,7 +121,8 @@ function App() {
           </button>
           <button
             className="btn btn-success mt-3 mx-3"
-            type="button"          >
+            type="button"
+            onClick={getClientePorId}          >
             Buscar
           </button>
           <button
