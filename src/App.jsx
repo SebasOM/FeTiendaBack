@@ -15,12 +15,11 @@ function App() {
   const saveCustomer = async()=>{
     if (!nombre.trim() || !apellidos.trim()){
       alert("Ingrese nombre y apellidos");
-
       return;
     }
     try{
       //consumir la api para guardar el cliente
-      const response = await axios.post(`http://172.16.57.16:3100/api/clientes`, {
+      const response = await axios.post(`http://172.18.0.13:3100/api/clientes`, {
         nombre,
         apellidos,
       })
@@ -35,7 +34,7 @@ function App() {
   //Metodo para recuperar clientes
   const getCustomer = async () => {
     try {
-      const url = `http://172.16.57.16:3100/api/clientes`;
+      const url = `http://172.18.0.13:3100/api/clientes`;
       const response = await axios.get(url);
       setData(response.data)
     }
@@ -52,7 +51,7 @@ function App() {
   //Buscar por ID
   const getClientePorId = async (id) => {
     try {
-      const url = `http://172.16.57.16:3100/api/clientes/${id}`;
+      const url = `http://172.18.0.13:3100/api/clientes/${id}`;
       const response = await axios.get(url);
       if (response.data.nombre != null) {
         setNombre(response.data.nombre);
@@ -66,6 +65,46 @@ function App() {
       console.log(error)
     }
   };
+
+  //Actualizar datos
+  const updateCliente = async (id) => {
+    if (!nombre.trim() || !apellidos.trim()) {
+      alert("Nombre y apellidos son obligatorios");
+      return;
+    }
+    // setLoading(true);
+    try {
+      const response = await axios.put(`http://172.18.0.13:3100/api/clientes/${id}`, {
+        nombre,
+        apellidos,
+      });
+      alert("Cliente actualizado correctamente ...")
+      getCustomer();
+    } catch (error) {
+      console.log(error)
+    }
+    // finally {
+    //   setLoading(false);
+    // }
+  };
+  const deleteCliente = async (id) => {
+    // setLoading(true);
+    try {
+      if (window.confirm(`Está seguro de eliminar el cliente ${nombre} ${apellidos}`)) {
+        const response = await axios.delete(`http://172.18.0.13:3100/api/clientes/${id}`);
+        alert("Cliente eliminado correctamente ...")
+        getCustomer();
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+    // finally {
+    //   setLoading(false);
+    // }
+  };
+
+
   return (
     <>
       <div className="container">
@@ -127,12 +166,14 @@ function App() {
           </button>
           <button
             className="btn btn-warning mt-3 mx-3"
-            type="button"          >
+            type="button"
+            onClick={()=>updateCliente(sid)}          >
             Actualizar
           </button>
           <button
             className="btn btn-danger mt-3 mx-3"
-            type="button"          >
+            type="button"
+            onClick={()=>deleteCliente(sid)}          >
             Eliminar
           </button>
           <button
